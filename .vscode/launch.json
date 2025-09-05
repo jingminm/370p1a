@@ -1,0 +1,12 @@
+{
+    "configurations": [
+    {
+        "type": "lldb",
+        "request": "launch",
+        "name": "Launch",
+        "program": "/Users/jingminmei/Downloads/370 p1/starter_1a/assembler",
+        "args": ["test1.as", "test1.mc"],
+        "cwd": "/Users/jingminmei/Downloads/370 p1/starter_1a"
+    }
+    ]
+}

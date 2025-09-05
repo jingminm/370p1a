@@ -14,10 +14,11 @@
 
 int readAndParse(FILE *, char *, char *, char *, char *, char *);
 static void checkForBlankLinesInCode(FILE *inFilePtr);
-static inline int isNumber(char *);
-static inline void printHexToFile(FILE *, int);
+// static inline int isNumber(char *);
+// static inline void printHexToFile(FILE *, int);
 
-int main(int argc, char **argv)
+int 
+main(int argc, char **argv)
 {
     char *inFileString, *outFileString;
     FILE *inFilePtr, *outFilePtr;
@@ -48,31 +49,59 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    /* here is an example for how to use readAndParse to read a line from
-        inFilePtr */
-    if (! readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
-        /* reached end of file */
+    // Holder for the array of labels
+    char *labels[1000];
+    // Holder for the current position in the labels array
+    uint32_t pos = 0;
+    // First loop, get the labels and their addresses
+    while( readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
+        // If a label exists on this line, store it with its address
+        if(label[0]!= '\0') {
+            // Check for duplicates in previous labels
+            for (uint32_t i = 0; i < pos; i++) {
+                if (strcmp(labels[i], label) == 0) {
+                    printf("error: duplicate label '%s'\n", label);
+                    exit(1);
+                }
+            }
+            labels[pos] = malloc(strlen(label) + 1);
+            strcpy(labels[pos], label);
+        }
+        pos++;
     }
 
-    /* this is how to rewind the file ptr so that you start reading from the
-        beginning of the file */
+    // Second loop, translate assembly to machine code
     rewind(inFilePtr);
 
-    /* after doing a readAndParse, you may want to do the following to test the
-        opcode */
-    if (!strcmp(opcode, "add")) {
-        /* do whatever you need to do for opcode "add" */
-    }
+    // Second loop, translate assembly to machine code
+    // Holder for the binary code assembled from one line of assembly code.
+    // uint32_t machine_code;
+    
+    // /* here is an example for how to use readAndParse to read a line from
+    //     inFilePtr */
+    // if (! readAndParse(inFilePtr, label, opcode, arg0, arg1, arg2) ) {
+    //     /* reached end of file */
+    // }
 
-    /* here is an example of using isNumber. "5" is a number, so this will
-       return true */
-    if(isNumber("5")) {
-        printf("It's a number\n");
-    }
+    // /* this is how to rewind the file ptr so that you start reading from the
+    //     beginning of the file */
+    // rewind(inFilePtr);
 
-    /* here is an example of using printHexToFile. This will print a
-       machine code word / number in the proper hex format to the output file */
-    printHexToFile(outFilePtr, 123);
+    // /* after doing a readAndParse, you may want to do the following to test the
+    //     opcode */
+    // if (!strcmp(opcode, "add")) {
+    //     /* do whatever you need to do for opcode "add" */
+    // }
+
+    // /* here is an example of using isNumber. "5" is a number, so this will
+    //    return true */
+    // if(isNumber("5")) {
+    //     printf("It's a number\n");
+    // }
+
+    // /* here is an example of using printHexToFile. This will print a
+    //    machine code word / number in the proper hex format to the output file */
+    // printHexToFile(outFilePtr, 123);
 
     return(0);
 }
@@ -188,17 +217,17 @@ readAndParse(FILE *inFilePtr, char *label, char *opcode, char *arg0,
     return(1);
 }
 
-static inline int
-isNumber(char *string)
-{
-    int num;
-    char c;
-    return((sscanf(string, "%d%c",&num, &c)) == 1);
-}
+// static inline int
+// isNumber(char *string)
+// {
+//     int num;
+//     char c;
+//     return((sscanf(string, "%d%c",&num, &c)) == 1);
+// }
 
 
 // Prints a machine code word in the proper hex format to the file
-static inline void 
-printHexToFile(FILE *outFilePtr, int word) {
-    fprintf(outFilePtr, "0x%08X\n", word);
-}
+// static inline void 
+// printHexToFile(FILE *outFilePtr, int word) {
+//     fprintf(outFilePtr, "0x%08X\n", word);
+// }
